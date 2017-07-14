@@ -1,4 +1,4 @@
-# Jenkins PHP slave image for SCA project.
+# Jenkins ApiGen slave image for SCA project.
 # TODO: check https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run
 
 FROM jenkinsci/slave
@@ -29,44 +29,9 @@ RUN chown jenkins:jenkins /home/jenkins/.composer
 USER jenkins
 RUN php --version
 
-# Install PHPUnit
-# https://phpunit.de/
-RUN composer global require phpunit/phpunit
-RUN composer global require phpunit/php-invoker
-RUN composer global require phpunit/dbunit
-
-# Install Code Sniffer
-# https://github.com/squizlabs/PHP_CodeSniffer
-RUN composer global require squizlabs/php_codesniffer=*
-
-# Install PHPLoc
-# phploc is a tool for quickly measuring the size and analyzing the structure of a PHP project.
-# https://github.com/sebastianbergmann/phploc
-RUN composer global require phploc/phploc
-
-# Install PHPDepend
-# PHP_Depend is an adaption of the established Java development tool JDepend. This tool shows you the quality of your design in the terms of extensibility, reusability and maintainability.
-# http://pdepend.org/
-RUN composer global require pdepend/pdepend:@stable
-
-# Install PHPMD
-# PHP Mess Detector
-# http://phpmd.org/
-RUN composer global require phpmd/phpmd:@stable
-
-# Install phpcpd
-# Copy/Paste Detector (CPD) for PHP code. 
-# https://github.com/sebastianbergmann/phpcpd
-RUN composer global require --dev sebastian/phpcpd
-
-# Install phpdox
-# PHP Documentation Generator
-# http://phpdox.de/
-RUN composer global require theseer/phpdox
-
 # Install API Gen
 # PHP 7.1 ready Smart and Simple Documentation for your PHP project 
 # https://github.com/ApiGen/ApiGen
-# RUN composer global require apigen/apigen
+RUN composer global require apigen/apigen
 
 ENTRYPOINT ["jenkins-slave"]
