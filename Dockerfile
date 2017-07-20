@@ -14,11 +14,9 @@ RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get update && apt-get install -y curl git unzip lsof nano
 
 #Install basic php environment
-RUN apt-cache search php
 RUN apt-get update && apt-get install -y php-common php-cli php-xsl php-mbstring
 
 # Install composer
-# COPY composer-setup.php /tmp/composer-setup.php
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
 RUN php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'HASH OK'; } else { echo 'HASH FAIL'; unlink('/tmp/composer-setup.php'); } echo PHP_EOL;"
 RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
