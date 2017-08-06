@@ -1,2 +1,2 @@
-# docker-sca-ci-slave-php
-docker-sca-ci-slave-php
+# docker-sca-ci-slave-apigen
+docker-sca-ci-slave-apigen
