@@ -1,28 +1,27 @@
-# Jenkins PHP slave image for SCA project.
-# TODO: check https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run
+# Jenkins APIGen slave image for SCA project.
+# TODO: check https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices
 
 FROM btowerlabz/docker-sca-ci-slave
-MAINTAINER BTower Labz <labz@btower.net>
+MAINTAINER btower-labz <labz@btower.net>
+
+LABEL Name="docker-sca-ci-slave-apigen"
+LABEL Vendor="btower-labz"
+LABEL Version="1.0.0"
+LABEL Description="Provides apigen sca ci agent, either slave or swarm mode"
 
 ARG LABELS=/home/jenkins/swarm-labels.cfg
 
 #Install additional software
 USER root
-RUN apt-get update && apt-get install -y apt-utils
-
-#Install basic tools
-RUN apt-get update && apt-get install -y curl git unzip lsof nano
 
 #Install basic php environment
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update && apt-get install -y php-common php-cli php-xsl php-mbstring
+RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
 # Install composer
-RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
-RUN php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'HASH OK'; } else { echo 'HASH FAIL'; unlink('/tmp/composer-setup.php'); } echo PHP_EOL;"
-RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-RUN rm /tmp/composer-setup.php
-RUN touch /home/jenkins/.composer
-RUN chown jenkins:jenkins /home/jenkins/.composer
+ADD getcomposer.sh /tmp/getcomposer.sh
+RUN ["/bin/bash", "-c", "chmod u+x /tmp/getcomposer.sh; /tmp/getcomposer.sh"]
 
 USER jenkins
 
@@ -32,7 +31,12 @@ USER jenkins
 RUN composer global require apigen/apigen
 RUN printf " apigen" >>${LABELS}
 
-RUN uname -a
-RUN cat /etc/issue
-RUN php --version
-RUN cat ${LABELS}
+#ADD composer.json /home/jenkins/.composer/composer.json
+#RUN ["/bin/bash", "-c", "composer global update"]
+#RUN mkdir -p /home/jenkins/.ssh && touch /home/jenkins/.ssh/known_hosts
+
+# Set agent labels
+RUN printf " php apigen" >>${LABELS}
+
+# Send some info to build log
+RUN uname -a; cat /etc/issue; php --version; php --ini; php -m; cat ${LABELS}
